@@ -27,4 +27,29 @@ public class ProductVersion {
     //thuộc tính sản phẩm
     @Column(name = "PRODUCT_PROPERTY_ID")
     private int productPropertyId;
+
+    //ram
+    @Column(name = "RAM")
+    private Double ram;
+
+    @Column(name = "ROM")
+    private Double rom;
+
+    @Column(name = "CPU")
+    private String cpu;
+
+    @Column(name = "GPU")
+    private String gpu;
+
+    @Column(name = "SCREEN_SIZE")
+    private String screenSize;
+
+    @Column(name = "PIN")
+    private String pin;
+
+    @Column(name = "CAMERA")
+    private String camera;
+
+    @Column(name = "COLOR")
+    private String color;
 }

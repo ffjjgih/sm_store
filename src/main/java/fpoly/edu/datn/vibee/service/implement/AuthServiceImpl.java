@@ -1,6 +1,6 @@
 package fpoly.edu.datn.vibee.service.implement;
 
-import fpoly.edu.datn.vibee.common.JwtTokenProvider;
+//import fpoly.edu.datn.vibee.common.JwtTokenProvider;
 import fpoly.edu.datn.vibee.entity.UserInfo;
 import fpoly.edu.datn.vibee.entity.UserRole;
 import fpoly.edu.datn.vibee.model.request.RegisterRequest;
@@ -37,11 +37,11 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private AttachmentFileRepository attachmentFileRepository;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+//    @Autowired
+//    private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+//    @Autowired
+//    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     private UserRoleRepo userRoleRepo;
@@ -49,8 +49,8 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private RoleRepo roleRepo;
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+//    @Autowired
+//    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public ResponseEntity<?> login(String authorization) {
@@ -76,27 +76,27 @@ public class AuthServiceImpl implements AuthService {
         }
         if (userInfo.getStatus().equals("ACTIVE")) {
             try {
-                Authentication authentication = authenticationManager.  authenticate(
-                        new UsernamePasswordAuthenticationToken(
-                                userInfo.getEmail(),
-                                userInfo.getPassword()
-                        )
-                );
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+//                Authentication authentication = authenticationManager.  authenticate(
+//                        new UsernamePasswordAuthenticationToken(
+//                                userInfo.getEmail(),
+//                                userInfo.getPassword()
+//                        )
+//                );
+//                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                String jwt = jwtTokenProvider.generateToken(userInfo.getUsername());
-                UserDetailImplUser userDetails = (UserDetailImplUser) authentication
-                        .getPrincipal();
-                List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toList());
-                loginResponse.setAccessToken(jwt);
-                loginResponse.setPhone(userInfo.getPhone());
-                loginResponse.setRole(roles);
-                loginResponse.setEmail(userInfo.getEmail());
-                loginResponse.setAddress(userInfo.getAddress());
-                loginResponse.setFullName(userInfo.getFullName());
-                String avatar = attachmentFileRepository.findUrlById(userInfo.getAvatar());
-                loginResponse.setAvatar(avatar);
+//                String jwt = jwtTokenProvider.generateToken(userInfo.getUsername());
+//                UserDetailImplUser userDetails = (UserDetailImplUser) authentication
+//                        .getPrincipal();
+//                List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+//                        .collect(Collectors.toList());
+//                loginResponse.setAccessToken(jwt);
+//                loginResponse.setPhone(userInfo.getPhone());
+//                loginResponse.setRole(roles);
+//                loginResponse.setEmail(userInfo.getEmail());
+//                loginResponse.setAddress(userInfo.getAddress());
+//                loginResponse.setFullName(userInfo.getFullName());
+//                String avatar = attachmentFileRepository.findUrlById(userInfo.getAvatar());
+//                loginResponse.setAvatar(avatar);
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sai mật khẩu");
             }
@@ -128,7 +128,7 @@ public class AuthServiceImpl implements AuthService {
         userInfo.setFullName(registerRequest.getFullName());
         userInfo.setEmail(registerRequest.getEmail());
         userInfo.setPhone(registerRequest.getPhone());
-        userInfo.setPassword(bCryptPasswordEncoder.encode(registerRequest.getPassword()));
+//        userInfo.setPassword(bCryptPasswordEncoder.encode(registerRequest.getPassword()));
         userInfo.setAddress(registerRequest.getAddress());
         userInfo.setAvatar(registerRequest.getAvatar());
         userInfo.setStatus("ACTIVE");

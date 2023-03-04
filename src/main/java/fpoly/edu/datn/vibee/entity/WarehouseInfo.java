@@ -21,8 +21,8 @@ public class WarehouseInfo {
     @Column(name = "ID")
     private int id;
 
-    @Column(name= "PRODUCT_VERSION_ID")
-    private int productVersionId;
+    @Column(name= "Warehouse_ID")
+    private int warehouseId;
 
     @Column(name = "QUANTITY")
     private int quantity;
