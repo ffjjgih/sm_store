@@ -31,7 +31,7 @@ public class AttachmentFile {
     private String type;
 
     @Column(name = "SUB_TYPE")
-    private String size;
+    private Long size;
 
     @Column(name = "STATUS")
     private String status;

@@ -10,6 +10,10 @@ import org.apache.logging.log4j.ThreadContext;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -30,6 +34,12 @@ import java.util.regex.Pattern;
 public class CommonUtil {
 	private static String localIp = null;
 	private static ModelMapper mapper = null;
+	public static final String DATE_FORMAT = "dd/MM/yyyy";
+	public static final String DATE_FORMAT_YYYYMMDD = "yyyy-MM-dd";
+	public static final String DATE_FORMAT_YYYYMMDDHHMMSS = "yyyy-MM-dd HH:mm:ss";
+	public static final String DATE_FORMAT_YYYYMMDDHHMMSSSSS = "yyyy-MM-dd HH:mm:ss.SSS";
+	public static final String DATE_FORMAT_YYYYMMDDHHMMSSSSS_2 = "yyyyMMddHHmmssSSS";
+	public static final String DATE_FORMAT_YYYYMMDDHHMMSSSSS_3 = "yyyyMMddHHmmss";
 
 	public static <S, T> T toObject(S s, Class<T> targetClass) {
 		getMapper();
@@ -456,4 +466,13 @@ public class CommonUtil {
 		return pattern.matcher(temp).replaceAll("");
 	}
 
+	public static boolean uploadFile(MultipartFile file){
+		try {
+			FileCopyUtils.copy(file.getBytes(), new File(Constant.UPLOAD_DIR + file.getOriginalFilename()));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 }
