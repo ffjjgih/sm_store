@@ -8,6 +8,8 @@ import fpoly.edu.datn.vibee.utilities.CommonUtil;
 import fpoly.edu.datn.vibee.utilities.Constant;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,6 +46,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         uploadFileResponse.setUrl(attachmentFile.getUrl());
         uploadFileResponse.setSize(attachmentFile.getSize());
         uploadFileResponse.setId(attachmentFile.getId());
+        uploadFileResponse.setData(CommonUtil.getEncodeFile(uploadFileResponse.getUrl()));
         log.info("AttachmentService-uploadFile-End::Data:{}", uploadFileResponse);
         return new ResponseEntity<>(uploadFileResponse, null, 200);
     }

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.core.io.Resource;
 
 @Setter
 @Getter
@@ -17,4 +18,5 @@ public class UploadFileResponse {
     private int id;
     private String url;
     private String message;
+    private String data;
 }
