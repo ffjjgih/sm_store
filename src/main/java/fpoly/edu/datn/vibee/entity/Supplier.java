@@ -12,9 +12,9 @@ import java.util.Date;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "supplier")
 @Entity
-@Table(name = "brand")
-public class Brand {
+public class Supplier {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,8 +30,8 @@ public class Brand {
     @Column(name = "EMAIL")
     private String email;
 
-    @Column(name = "WEBSITE")
-    private String website;
+    @Column(name = "NUMBER_PHONE")
+    private String numberPhone;
 
     @Column(name = "DESCRIPTION")
     private String description;
@@ -47,9 +47,6 @@ public class Brand {
 
     @Column(name = "MODIFIED_BY")
     private String modifiedBy;
-
-    @Column(name = "BIRTH_OF_DATE")
-    private String birthOfDate;
 
     @Column(name = "STATUS")
     private String status;

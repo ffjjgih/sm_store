@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import fpoly.edu.datn.vibee.model.response.UploadFileResponse;
 import org.apache.logging.log4j.ThreadContext;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -19,6 +20,8 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
@@ -474,5 +477,32 @@ public class CommonUtil {
 			return false;
 		}
 		return true;
+	}
+
+	public static String convertDateToString(Date date) {
+		if (date == null) {
+			return null;
+		}
+		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
+		try {
+			return format.format(date);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public static String getEncodeFile(String url){
+		Path path = Path.of(url);
+		byte[] bytes = new byte[0];
+		try {
+			bytes = Files.readAllBytes(path);
+		} catch (IOException e) {
+			return null;
+		}
+		return Base64.getEncoder().encodeToString(bytes);
+	}
+
+	public static Date getCurrentDate() {
+		return new Date();
 	}
 }

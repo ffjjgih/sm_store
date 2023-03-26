@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Setter
 @Getter
@@ -24,14 +25,23 @@ public class Category {
     private String name;
 
     @Column(name = "CREATED_DATE")
-    private String createdDate;
+    private Date createdDate;
 
     @Column(name = "CREATED_BY")
     private String createdBy;
 
     @Column(name = "MODIFIED_DATE")
-    private String modifiedDate;
+    private Date modifiedDate;
 
     @Column(name = "MODIFIED_BY")
     private String modifiedBy;
+
+    @Column(name="FILE_ID")
+    private int fileId;
+
+    @Column(name="STATUS")
+    private String status;
+
+    @Column(name="DESCRIPTION")
+    private String description;
 }
