@@ -50,4 +50,33 @@ public class AttachmentServiceImpl implements AttachmentService {
         log.info("AttachmentService-uploadFile-End::Data:{}", uploadFileResponse);
         return new ResponseEntity<>(uploadFileResponse, null, 200);
     }
+
+    @Override
+    public ResponseEntity<?> uploadFileDoc(MultipartFile file) {
+        log.info("AttachmentService-uploadFile-Start::Data:{}", file);
+        UploadFileResponse uploadFileResponse = new UploadFileResponse();
+        AttachmentFile attachmentFile = new AttachmentFile();
+        boolean saveFile= CommonUtil.uploadFile(file);
+        if (!saveFile) {
+            log.error("AttachmentService-uploadFile-Error::Data:{}", saveFile);
+            uploadFileResponse.setMessage("Upload file failed");
+            return new ResponseEntity<>(uploadFileResponse, null, 400);
+        }
+        attachmentFile.setName(file.getOriginalFilename());
+        attachmentFile.setType(file.getContentType());
+        attachmentFile.setUrl(Constant.UPLOAD_DIR + file.getOriginalFilename());
+        attachmentFile.setSize(file.getSize());
+        attachmentFile.setCreatedDate(new Date());
+        attachmentFile.setCreatedBy("admin");
+        attachmentFile.setStatus("hoạt động");
+        this.attachmentFileRepository.save(attachmentFile);
+        uploadFileResponse.setMessage("Upload file success");
+        uploadFileResponse.setFileType(attachmentFile.getType());
+        uploadFileResponse.setFileName(attachmentFile.getName());
+        uploadFileResponse.setUrl(attachmentFile.getUrl());
+        uploadFileResponse.setSize(attachmentFile.getSize());
+        uploadFileResponse.setId(attachmentFile.getId());
+        log.info("AttachmentService-uploadFile-End::Data:{}", uploadFileResponse);
+        return new ResponseEntity<>(uploadFileResponse, null, 200);
+    }
 }

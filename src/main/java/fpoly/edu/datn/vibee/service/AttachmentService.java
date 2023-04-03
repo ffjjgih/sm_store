@@ -5,4 +5,5 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface AttachmentService {
     ResponseEntity<?> uploadFile(MultipartFile file);
+    ResponseEntity<?> uploadFileDoc(MultipartFile file);
 }

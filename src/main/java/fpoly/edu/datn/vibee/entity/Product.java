@@ -33,10 +33,6 @@ public class Product {
     @Column(name = "STATUS")
     private String status;
 
-    //đánh giá sao
-    @Column(name = "RATE_ID")
-    private int rateId;
-
     //ngày tạo
     @Column(name = "CREATED_DATE")
     private Date createdDate;
@@ -64,4 +60,10 @@ public class Product {
     //phiên bản sản phẩm
     @Column(name = "PRODUCT_SERIES_ID")
     private int productSeriesId;
+
+    @Column(name = "PRODUCT_PROPERTY_ID")
+    private int productPropertyId;
+
+    @Column(name = "PRODUCT_INTRO_ID")
+    private int productIntroId;
 }

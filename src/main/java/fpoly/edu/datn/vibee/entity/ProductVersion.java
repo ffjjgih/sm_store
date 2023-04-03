@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Setter
 @Getter
@@ -21,34 +22,29 @@ public class ProductVersion {
     private int id;
 
     //bài viết sản phẩm
-    @Column(name = "PRODUCT_INTRO_ID")
-    private int productIntroId;
+    @Column(name = "PRODUCT_ID")
+    private int productId;
 
     //thuộc tính sản phẩm
-    @Column(name = "PRODUCT_PROPERTY_ID")
-    private int productPropertyId;
 
     //ram
     @Column(name = "RAM")
-    private Double ram;
+    private String ram;
 
     @Column(name = "ROM")
-    private Double rom;
+    private String rom;
 
     @Column(name = "CPU")
     private String cpu;
 
-    @Column(name = "GPU")
-    private String gpu;
-
     @Column(name = "SCREEN_SIZE")
-    private String screenSize;
+    private double screenSize;
 
     @Column(name = "PIN")
     private String pin;
 
-    @Column(name = "CAMERA")
-    private String camera;
+    @Column(name = "IMAGE")
+    private int image;
 
     @Column(name = "COLOR")
     private String color;

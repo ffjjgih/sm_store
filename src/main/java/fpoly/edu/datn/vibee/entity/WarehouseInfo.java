@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Setter
 @Getter
@@ -21,20 +23,35 @@ public class WarehouseInfo {
     @Column(name = "ID")
     private int id;
 
-    @Column(name= "Warehouse_ID")
-    private int warehouseId;
+    @Column(name= "PRODUCT_VERSION_ID")
+    private int productVersionId;
 
     @Column(name = "QUANTITY")
     private int quantity;
 
+    @Column(name = "SUM_IN_PRICE")
+    private BigDecimal sumInPrice;
+
+    @Column(name = "SUM_OUT_PRICE")
+    private BigDecimal sumOutPrice;
+
+    @Column(name = "SUM_IN_AMOUNT")
+    private int sumInAmount;
+
+    @Column(name = "SUM_OUT_AMOUNT")
+    private int sumOutAmount;
+
+    @Column(name = "NUMBER_OF_IN")
+    private int numberOfIn;
+
     @Column(name = "CREATED_DATE")
-    private String createdDate;
+    private Date createdDate;
 
     @Column(name = "CREATED_BY")
     private String createdBy;
 
     @Column(name = "MODIFIED_DATE")
-    private String modifiedDate;
+    private Date modifiedDate;
 
     @Column(name = "MODIFIED_BY")
     private String modifiedBy;

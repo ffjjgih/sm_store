@@ -17,4 +17,9 @@ public class AttachmentController {
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         return this.attachmentService.uploadFile(file);
     }
+
+    @PostMapping("/upload-document")
+    public ResponseEntity<?> uploadFileDoc(@RequestParam("file") MultipartFile file) {
+        return this.attachmentService.uploadFileDoc(file);
+    }
 }

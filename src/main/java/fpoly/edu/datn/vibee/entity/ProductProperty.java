@@ -20,33 +20,57 @@ public class ProductProperty {
     @Column(name = "ID")
     private int id;
 
-    @Column(name = "SCREEN")
-    private String screen;
 
     @Column(name = "CPU")
     private String cpu;
 
     @Column(name = "RAM")
-    private Double ram;
+    private String ram;
 
     @Column(name = "ROM")
-    private Double rom;
-
-    @Column(name = "CAMERA")
-    private String camera;
-
-    @Column(name = "PIN")
-    private String pin;
-
-    @Column(name = "DESIGN")
-    private String design;
-
-    @Column(name = "CONNECT")
-    private String connect;
+    private String rom;
 
     @Column(name = "OPERATING_SYSTEM")
     private String operatingSystem;
 
-    @Column(name = "INFORMATION_OTHER")
-    private String informationOther;
+    @Column(name="SCREEN_SIZE")
+    private double screenSize;
+    @Column(name="SCREEN_RESOLUTION")
+    private String screenResolution;
+
+    @Column(name="SCREEN_TECHNOLOGY")
+    private String screenTechnology;
+
+    @Column(name="SWEEP_FREQUENCY")
+    private String sweepFrequency;
+
+    @Column(name="CAMERA_FRONT")
+    private String cameraFront;
+
+    @Column(name="CAMERA_REAR")
+    private String cameraRear;
+
+    @Column(name="PIN_CAPACITY")
+    private String pinCapacity;
+
+    @Column(name="CHARGING_SPEED")
+    private String chargingSpeed;
+
+    @Column(name="CHARGING_TYPE")
+    private String chargingType;
+
+    @Column(name="SIM")
+    private String sim;
+
+    @Column(name="IS_Jack")
+    private boolean isJack;
+
+    @Column(name="WEIGHT")
+    private String weight;
+
+    @Column(name="FRAME_MATERIAL")
+    private String frameMaterial;
+
+    @Column(name="BACK_MATERIAL")
+    private String backMaterial;
 }
