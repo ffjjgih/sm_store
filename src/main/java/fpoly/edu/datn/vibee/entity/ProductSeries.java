@@ -25,4 +25,7 @@ public class ProductSeries {
 
     @Column(name ="CATEGORY_ID")
     private int categoryId;
+
+    @Column(name = "SERIES_NAME")
+    private String seriesName;
 }
