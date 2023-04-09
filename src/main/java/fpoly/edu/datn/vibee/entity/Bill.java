@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Setter
 @Getter
@@ -28,13 +29,13 @@ public class Bill {
     private BigDecimal price;
 
     @Column(name = "CREATED_DATE")
-    private String createdDate;
+    private Date createdDate;
 
     @Column(name = "CREATED_BY")
     private String createdBy;
 
     @Column(name = "MODIFIED_DATE")
-    private String modifiedDate;
+    private Date modifiedDate;
 
     @Column(name = "MODIFIED_BY")
     private String modifiedBy;
@@ -45,22 +46,19 @@ public class Bill {
     @Column(name="STATUS")
     private String status;
 
-    //địa chỉ người mua hàng
-    @Column(name= "RECEIVING_ADDRESS")
-    private String receivingAddress;
+    @Column(name= "DESCRIPTION")
+    private String description;
 
-    //số điện thoại người nhận hàng
-    @Column(name= "RECEIVING_PHONE")
-    private String receivingPhone;
+    @Column(name= "FILE_ID")
+    private int fileId;
 
-    //tên người nhận hàng
-    @Column(name= "RECEIVING_NAME")
-    private String receivingName;
+    //phương thức nhận hàng
+    @Column(name= "RECEIVING_METHOD")
+    private String receivingMethod;
 
-    //email người nhận hàng
-    @Column(name= "RECEIVING_EMAIL")
-    private String receivingEmail;
-
+    //phương thức giao dịch
+    @Column(name= "TRANSACTION_METHOD")
+    private String transactionMethod;
     @Column(name= "TAX")
     private BigDecimal tax;
 
