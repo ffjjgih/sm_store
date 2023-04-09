@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Setter
 @Getter
@@ -23,11 +24,11 @@ public class Order {
 
     //tổng tiền
     @Column(name = "PRICE")
-    private int price;
+    private BigDecimal price;
 
     //thời gian đặt hàng
     @Column(name = "CREATED_DATE")
-    private String createdDate;
+    private Date createdDate;
 
     //thông tin người mua hàng
     @Column(name = "CREATED_BY")
@@ -35,7 +36,7 @@ public class Order {
 
     //thời gian duyệt
     @Column(name = "MODIFIED_DATE")
-    private String modifiedDate;
+    private Date modifiedDate;
 
     //thông tin người duyệt
     @Column(name = "MODIFIED_BY")
@@ -57,57 +58,13 @@ public class Order {
     @Column(name= "RECEIVING_NAME")
     private String receivingName;
 
-    //email người nhận hàng
-    @Column(name= "RECEIVING_EMAIL")
-    private String receivingEmail;
-
     //ghi chú
     @Column(name= "RECEIVING_NOTE")
     private String receivingNote;
 
-    //phương thức thanh toán
-    @Column(name= "PAYMENT_METHOD")
-    private String paymentMethod;
-
-    //trạng thái thanh toán
-    @Column(name= "PAYMENT_STATUS")
-    private String paymentStatus;
-
-    //mã thanh toán
-    @Column(name= "PAYMENT_ID")
-    private String paymentId;
-
-    //thời gian thanh toán
-    @Column(name= "PAYMENT_DATE")
-    private String paymentDate;
-
-    //số tiền thanh toán
-    @Column(name= "PAYMENT_AMOUNT")
-    private String paymentAmount;
-
-    //đơn vị tiền tệ
-    @Column(name= "PAYMENT_CURRENCY")
-    private String paymentCurrency;
-
-    //mô tả thanh toán
-    @Column(name= "PAYMENT_DESCRIPTION")
-    private String paymentDescription;
-
     //chữ ký thanh toán
     @Column(name= "PAYMENT_SIGNATURE")
     private String paymentSignature;
-
-    //số tài khoản ngân hàng
-    @Column(name= "PAYMENT_BANK_CODE")
-    private String paymentBankCode;
-
-    //tên ngân hàng
-    @Column(name= "PAYMENT_BANK_NAME")
-    private String paymentBankName;
-
-    //phí thanh toán
-    @Column(name= "PAYMENT_FEE")
-    private String paymentFee;
 
     //tiền thuế
     @Column(name= "TAX")
@@ -120,4 +77,10 @@ public class Order {
     //thông tin người giao hàng
     @Column(name="SHIPPER_ID")
     private int shipperId;
+
+    @Column(name="TRANSPORT_COMPANY_ID")
+    private int transportCompanyId;
+
+    @Column(name="BILL_ID")
+    private int billId;
 }

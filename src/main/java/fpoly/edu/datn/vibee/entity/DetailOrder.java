@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Setter
 @Getter
@@ -24,24 +25,8 @@ public class DetailOrder {
     @Column(name = "ORDER_ID")
     private int orderId;
 
-    @Column(name = "PRODUCT_ID")
-    private int productId;
-
-    @Column(name = "QUANTITY")
-    private int quantity;
-
-    @Column(name = "PRICE")
-    private BigDecimal price;
-
     @Column(name = "CREATED_DATE")
-    private String createdDate;
-
-    @Column(name = "CREATED_BY")
-    private String createdBy;
-
-    @Column(name = "MODIFIED_DATE")
-    private String modifiedDate;
-
-    @Column(name = "MODIFIED_BY")
-    private String modifiedBy;
+    private Date createdDate;
+    @Column(name = "STATUS")
+    private String status;
 }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Setter
 @Getter
@@ -33,29 +34,32 @@ public class Shipper {
     private String email;
 
     @Column(name = "CREATED_DATE")
-    private String createdDate;
+    private Date createdDate;
 
     @Column(name = "CREATED_BY")
     private String createdBy;
 
     @Column(name = "MODIFIED_DATE")
-    private String modifiedDate;
+    private Date modifiedDate;
 
     @Column(name = "MODIFIED_BY")
     private String modifiedBy;
 
     @Column(name = "TRANSPORT_COMPANY_ID")
-    private String transportCompanyId;
+    private int transportCompanyId;
 
     @Column(name = "STATUS")
-    private int status;
+    private String status;
 
-    @Column(name = "IMAGE")
-    private String image;
+    @Column(name = "avatar")
+    private String avatar;
 
     @Column(name = "DESCRIPTION")
     private String description;
 
     @Column(name = "NUMBER_OF_DELIVERY")
     private int numberOfDelivery;
+
+    @Column(name = "SHIPPER_CODE")
+    private String shipperCode;
 }
