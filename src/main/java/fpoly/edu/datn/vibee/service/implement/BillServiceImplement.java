@@ -3,18 +3,28 @@ package fpoly.edu.datn.vibee.service.implement;
 import fpoly.edu.datn.vibee.entity.*;
 import fpoly.edu.datn.vibee.model.fc.response.FCShippersResponse;
 import fpoly.edu.datn.vibee.model.request.TransactionRequest;
+import fpoly.edu.datn.vibee.model.response.BillResponse;
+import fpoly.edu.datn.vibee.model.response.DetailBillResponse;
 import fpoly.edu.datn.vibee.model.response.TransactionResponse;
+import fpoly.edu.datn.vibee.model.response.UploadFileResponse;
+import fpoly.edu.datn.vibee.model.result.BillResult;
+import fpoly.edu.datn.vibee.model.result.DetailBillResult;
+import fpoly.edu.datn.vibee.model.result.DetailOrderResult;
 import fpoly.edu.datn.vibee.model.result.TransactionResult;
 import fpoly.edu.datn.vibee.repository.*;
 import fpoly.edu.datn.vibee.service.BillService;
 import fpoly.edu.datn.vibee.service.mockapi.MockApiService;
+import fpoly.edu.datn.vibee.utilities.CommonUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Log4j2
@@ -50,6 +60,12 @@ public class BillServiceImplement implements BillService {
     @Autowired
     private DetailOrderRepository detailOrderRepository;
 
+    @Autowired
+    private TransportCompanyRepository transportCompanyRepository;
+
+    @Autowired
+    private AttachmentFileRepository attachmentFileRepository;
+
     /**
      * @param request
      * @return
@@ -59,7 +75,7 @@ public class BillServiceImplement implements BillService {
         log.info("Transaction::start - request: {}", request);
         TransactionResponse response = new TransactionResponse();
         String username= "admin";
-        if(checkProductVersion(request)){
+        if(!checkProductVersion(request)){
             response.setStatus(500);
             response.setMessage("Sản phẩm đã hết hàng");
             return ResponseEntity.noContent().build().ok(response);
@@ -75,6 +91,135 @@ public class BillServiceImplement implements BillService {
         response.setStatus(200);
         response.setMessage("Thành công");
         log.info("Transaction::end - response: {}", response);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * @param search : mã đơn hàng
+     * @param status : trạng thái đơn hàng
+     * @return
+     */
+    @Override
+    public ResponseEntity<BillResponse> getBills(String search, String status, int page, int size) {
+        log.info("getBills::start - search: {}, status: {}", search, status);
+        BillResponse response = new BillResponse();
+        List<BillResult> billResults=new ArrayList<>();
+        Pageable pageable=Pageable.ofSize(size).withPage(page);
+        int billId=Integer.parseInt(search);
+        List<Bill> bills=new ArrayList<>();
+        if (billId==0){
+            bills = billRepository.findAllByStatus(status,pageable);
+        }else {
+            bills = billRepository.findAllByStatusAndId(status,billId,pageable);
+        }
+        for (Bill bill : bills) {
+            BillResult billResult=new BillResult();
+            billResult.setBillId(bill.getId());
+            Order order=orderRepository.findByBillId(bill.getId());
+            if (order!=null){
+                Shipper shipper=shipperRepository.getById(order.getShipperId());
+                if (shipper!=null){
+                    billResult.setShipperName(shipper.getName());
+                    billResult.setShipperPhone(shipper.getPhone());
+                }
+                billResult.setOrderId(order.getId());
+                billResult.setFullName(order.getReceivingName());
+                billResult.setNumberPhone(order.getReceivingPhone());
+                billResult.setAddress(order.getReceivingAddress());
+            }else{
+                billResult.setFullName("Khách hàng offline");
+                billResult.setNumberPhone("Khách hàng offline");
+                billResult.setAddress("Khách hàng offline");
+            }
+            billResult.setTransferMethod(bill.getTransactionMethod());
+            billResult.setReceivingMethod(bill.getReceivingMethod());
+            billResult.setCreatedDate(CommonUtil.convertDateToString(bill.getCreatedDate()));
+            billResult.setCompletedDate(CommonUtil.convertDateToString(bill.getModifiedDate()));
+            billResult.setPrice(bill.getPrice());
+            billResults.add(billResult);
+        }
+        response.setData(billResults);
+        response.setStatus(200);
+        response.setBillStatus(status);
+        response.setMessage("Thành công");
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseEntity<DetailBillResponse> getBillDetail(int id) {
+        log.info("getBillDetail::start - id: {}", id);
+        DetailBillResponse response = new DetailBillResponse();
+        List<DetailBillResult> detailBillResults=new ArrayList<>();
+        List<DetailBill> detailBills=detailBillRepository.findAllByBillId(id);
+        Bill bill=billRepository.getById(id);
+        BigDecimal price=new BigDecimal(0);
+        List<DetailOrderResult> detailOrderResults=new ArrayList<>();
+        for (DetailBill detailBill : detailBills) {
+            DetailBillResult detailBillResult=new DetailBillResult();
+            detailBillResult.setQuantity(detailBill.getQuantity());
+            detailBillResult.setPrice(detailBill.getPrice());
+            detailBillResult.setSumPrice(detailBill.getPrice().multiply(new BigDecimal(detailBill.getQuantity())));
+            Product product=productRepository.findProductByWarehouseId(detailBill.getWarehouseId());
+            if (product!=null){
+                detailBillResult.setName(product.getName());
+                if (product.getImagePrimary() != 0) {
+                    AttachmentFile fileAttachment = this.attachmentFileRepository.getById(product.getImagePrimary());
+                    UploadFileResponse uploadFileResponse = new UploadFileResponse();
+                    uploadFileResponse.setFileName(fileAttachment.getName());
+                    uploadFileResponse.setFileDownloadUri(fileAttachment.getUrl());
+                    uploadFileResponse.setFileType(fileAttachment.getType());
+                    uploadFileResponse.setData(CommonUtil.getEncodeFile(fileAttachment.getUrl()));
+                    uploadFileResponse.setSize(fileAttachment.getSize());
+                    detailBillResult.setImage(uploadFileResponse);
+                }
+            }
+            price=price.add(detailBillResult.getSumPrice());
+            detailBillResults.add(detailBillResult);
+        }
+
+        Order order=orderRepository.findByBillId(id);
+        if (order!=null){
+            List<DetailOrder> detailOrders=detailOrderRepository.findAllByOrderId(order.getId());
+            for (DetailOrder detailOrder : detailOrders) {
+                DetailOrderResult detailBillResult=new DetailOrderResult();
+                detailBillResult.setDetailId(detailOrder.getId());
+                detailBillResult.setDate(CommonUtil.convertDateToString(detailOrder.getCreatedDate()));
+                detailBillResult.setStatus(detailOrder.getStatus());
+                detailOrderResults.add(detailBillResult);
+            }
+            TransportCompany transportCompany=transportCompanyRepository.getById(order.getTransportCompanyId());
+            if (transportCompany!=null){
+                response.setReceiveCompany(transportCompany.getName());
+            }
+            Shipper shipper=shipperRepository.getById(order.getShipperId());
+            if (shipper!=null){
+                response.setShipperName(shipper.getName());
+                response.setShipperPhone(shipper.getPhone());
+            }
+            response.setDetailOrders(detailOrderResults);
+            response.setOrderId(order.getId());
+            response.setFullName(order.getReceivingName());
+            response.setNumberPhone(order.getReceivingPhone());
+            response.setAddress(order.getReceivingAddress());
+            response.setReceiveAddress(order.getReceivingAddress());
+        }else{
+            response.setFullName("Khách hàng offline");
+            response.setNumberPhone("Khách hàng offline");
+            response.setAddress("Khách hàng offline");
+            response.setReceiveAddress("Khách hàng offline");
+        }
+        response.setBillId(id);
+        response.setCreatedDate(CommonUtil.convertDateToString(bill.getCreatedDate()));
+        response.setCompletedDate(CommonUtil.convertDateToString(bill.getModifiedDate()));
+        response.setPrice(price);
+        response.setDetailBills(detailBillResults);
+        response.setReceivingMethod(bill.getReceivingMethod());
+        response.setTransferMethod(bill.getTransactionMethod());
+        response.setSendAddress("FPT Polytechnic Hanoi, Phố Trịnh Văn Bô, Phương Canh, Nam Từ Liêm, Hà Nội");
         return ResponseEntity.ok(response);
     }
 
@@ -107,8 +252,8 @@ public class BillServiceImplement implements BillService {
     private void createDetails(TransactionRequest request, int billId, String username){
         for (TransactionResult result : request.getSellProducts()) {
             DetailBill detailBill = new DetailBill();
-            ProductVersion version = productVersionRepository.findById(result.getProductVersionId()).get();
-            Warehouse warehouse = warehouseRepository.findById(result.getWarehouseId()).get();
+            ProductVersion version = productVersionRepository.getById(result.getProductVersionId());
+            Warehouse warehouse = warehouseRepository.getById(result.getWarehouseId());
             warehouse.setOutAmount(warehouse.getOutAmount() + result.getQuantity());
             warehouse.setModifiedBy(username);
             warehouse.setModifiedDate(new Date());
@@ -118,6 +263,7 @@ public class BillServiceImplement implements BillService {
             warehouseInfo.setModifiedBy(username);
             warehouseInfo.setModifiedDate(new Date());
             warehouseInfo.setSumOutAmount(warehouseInfo.getSumOutAmount() + result.getQuantity());
+            warehouseInfo.setQuantity(warehouseInfo.getQuantity()-result.getQuantity());
             warehouseInfoRepository.save(warehouseInfo);
             detailBill.setBillId(billId);
             detailBill.setPrice(warehouse.getOutPrice());
@@ -126,6 +272,7 @@ public class BillServiceImplement implements BillService {
             detailBill.setModifiedBy(username);
             detailBill.setCreatedDate(new Date());
             detailBill.setModifiedDate(new Date());
+            detailBill.setWarehouseId(result.getWarehouseId());
             detailBillRepository.save(detailBill);
         }
     }

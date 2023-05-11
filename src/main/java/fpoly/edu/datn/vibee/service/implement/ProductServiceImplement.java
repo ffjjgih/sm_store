@@ -6,7 +6,11 @@ import fpoly.edu.datn.vibee.model.request.ProductPropertyRequest;
 import fpoly.edu.datn.vibee.model.request.ProductRequest;
 import fpoly.edu.datn.vibee.model.request.ProductVersionRequest;
 import fpoly.edu.datn.vibee.model.response.ProductsResponse;
+import fpoly.edu.datn.vibee.model.response.SellOfflineResponse;
+import fpoly.edu.datn.vibee.model.response.UploadFileResponse;
 import fpoly.edu.datn.vibee.model.result.ProductResult;
+import fpoly.edu.datn.vibee.model.result.SellOfflineProductVersionResult;
+import fpoly.edu.datn.vibee.model.result.SellOfflineResult;
 import fpoly.edu.datn.vibee.repository.*;
 import fpoly.edu.datn.vibee.service.ProductService;
 import fpoly.edu.datn.vibee.utilities.CommonUtil;
@@ -47,6 +51,16 @@ public class ProductServiceImplement implements ProductService {
     @Autowired
     private WarehouseRepository warehouseRepository;
 
+    @Autowired
+    private SeriesRepository productSeriesRepository;
+
+    @Autowired
+    private AttachmentFileRepository attachmentFileRepository;
+
+    @Autowired
+    private BrandRepository brandRepository;
+
+
     @Override
     public ResponseEntity<ProductsResponse> createProduct(ProductRequest productRequest) {
         log.info("Create product with data: {}", CommonUtil.beanToString(productRequest));
@@ -77,6 +91,7 @@ public class ProductServiceImplement implements ProductService {
         productProperty.setCpu(productPropertyRequest.getCpu());
         ProductProperty finalProductProperty = productPropertyRepository.save(productProperty);
 
+
         //thêm mới sản phẩm
         Product product = new Product();
         product.setCreatedBy(username);
@@ -96,7 +111,7 @@ public class ProductServiceImplement implements ProductService {
         for (ProductVersionRequest versionRequest : productRequest.getVersions()) {
             //thêm mới phiên bản sản phẩm
             ProductVersion productVersion = new ProductVersion();
-            productVersion.setColor(username);
+            productVersion.setColor(versionRequest.getColor());
             productVersion.setCpu(finalProductProperty.getCpu());
             productVersion.setRam(versionRequest.getRam());
             productVersion.setRom(versionRequest.getRom());
@@ -141,6 +156,7 @@ public class ProductServiceImplement implements ProductService {
             warehouseInfo.setSumOutPrice(BigDecimal.ZERO);
             warehouseInfo.setSumInPrice(versionRequest.getInPrice().multiply(BigDecimal.valueOf(versionRequest.getQuantity())));
             warehouseInfo.setSumOutAmount(0);
+
             WarehouseInfo finalWarehouseInfo= warehouseInfoRepository.save(warehouseInfo);
 
             //nhập kho
@@ -154,7 +170,15 @@ public class ProductServiceImplement implements ProductService {
             warehouse.setModifiedBy(username);
             warehouse.setOutPrice(versionRequest.getOutPrice());
             warehouse.setOutAmount(0);
+            warehouse.setStatus("hoạt động");
             warehouse.setEntryOfNumber(1);
+            if (productRequest.getSupplierId()==0){
+                warehouse.setIsSupplier(false);
+                warehouse.setSupplierId(productRequest.getBrandId());
+            }else {
+                warehouse.setIsSupplier(true);
+                warehouse.setSupplierId(productRequest.getSupplierId());
+            }
             warehouseRepository.save(warehouse);
         }
         finalProductProperty.setRam(rams);
@@ -236,5 +260,67 @@ public class ProductServiceImplement implements ProductService {
         productsResponse.setMessage("Lấy danh sách sản phẩm thành công");
         log.info("Get all product successfully");
         return ResponseEntity.ok(productsResponse);
+    }
+
+    /**
+     * @param search
+     * @return
+     */
+    @Override
+    public ResponseEntity<SellOfflineResponse> getProductsSellOffline(String search) {
+        log.info("Get all product sell offline with data: {}", search);
+        SellOfflineResponse sellOfflineResponse = new SellOfflineResponse();
+        List<SellOfflineResult> productResults = new ArrayList<>();
+        List<Product> products = productRepository.findAllByStatusAndNameContaining("hoạt động",search);
+        if (products.isEmpty()){
+            sellOfflineResponse.setStatus(404);
+            sellOfflineResponse.setMessage("Không tìm thấy sản phẩm nào");
+            log.info("Not found product");
+            return ResponseEntity.noContent().build();
+        }
+        for (Product product : products) {
+            SellOfflineResult productResult = new SellOfflineResult();
+            ProductSeries productSeries = productSeriesRepository.findById(product.getProductSeriesId()).orElse(null);
+            productResult.setProductId(product.getId());
+            productResult.setBrandId(productSeries.getBrandId());
+            Brand brand = brandRepository.findById(productSeries.getBrandId()).orElse(null);
+            productResult.setBrandName(brand.getName());
+            productResult.setProductName(product.getName());
+            if (product.getImagePrimary() != 0) {
+                AttachmentFile fileAttachment = this.attachmentFileRepository.getById(product.getImagePrimary());
+                UploadFileResponse uploadFileResponse = new UploadFileResponse();
+                uploadFileResponse.setFileName(fileAttachment.getName());
+                uploadFileResponse.setFileDownloadUri(fileAttachment.getUrl());
+                uploadFileResponse.setFileType(fileAttachment.getType());
+                uploadFileResponse.setData(CommonUtil.getEncodeFile(fileAttachment.getUrl()));
+                uploadFileResponse.setSize(fileAttachment.getSize());
+                productResult.setImage(uploadFileResponse);
+            }
+            productResult.setSeriesId(product.getProductSeriesId());
+            List<ProductVersion> productVersions = productVersionRepository.getProductVersionByProductId(product.getId());
+            List<SellOfflineProductVersionResult> sellOfflineProductVersionResults = new ArrayList<>();
+            for (ProductVersion productVersion : productVersions) {
+                SellOfflineProductVersionResult sellOfflineProductVersionResult = new SellOfflineProductVersionResult();
+                sellOfflineProductVersionResult.setProductVersionId(productVersion.getId());
+                sellOfflineProductVersionResult.setColor(productVersion.getColor());
+                sellOfflineProductVersionResult.setRam(productVersion.getRam());
+                sellOfflineProductVersionResult.setRom(productVersion.getRom());
+                WarehouseInfo warehouseInfo = warehouseInfoRepository.getWarehouseInfoByProductVersionId(productVersion.getId());
+                Warehouse warehouse = warehouseRepository.getWarehouseByWarehouseInfoIdAndStatus(warehouseInfo.getId(), "hoạt động");
+                sellOfflineProductVersionResult.setPrice(warehouse.getOutPrice());
+                sellOfflineProductVersionResult.setSupplierId(warehouse.getSupplierId());
+                sellOfflineProductVersionResult.setWarehouseId(warehouse.getId());
+                sellOfflineProductVersionResult.setWarehouseInfoId(warehouseInfo.getId());
+                sellOfflineProductVersionResult.setQuantity(warehouseInfo.getQuantity());
+                sellOfflineProductVersionResults.add(sellOfflineProductVersionResult);
+            }
+            productResult.setVersionResults(sellOfflineProductVersionResults);
+            productResults.add(productResult);
+        }
+        sellOfflineResponse.setData(productResults);
+        sellOfflineResponse.setStatus(200);
+        sellOfflineResponse.setMessage("Lấy danh sách sản phẩm thành công");
+        log.info("Get all product successfully");
+        return ResponseEntity.ok(sellOfflineResponse);
     }
 }

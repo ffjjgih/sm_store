@@ -23,11 +23,9 @@ public class TransactionRequest {
     private String transactionStatus;
     private String typeSell;
     private int img;
-    private int companyId;
     private String description;
     private String receivingAddress;
     private int transportCompanyId;
-
     private String receivingPhone;
     private String receivingName;
     private List<TransactionResult> sellProducts;

@@ -43,6 +43,12 @@ public class Warehouse {
     @Column(name = "CREATED_BY")
     private String createdBy;
 
+    @Column(name="IS_SUPPLIER")
+    private Boolean isSupplier;
+
+    @Column(name="SUPPLIER_ID")
+    private int supplierId;
+
     @Column(name = "MODIFIED_DATE")
     private Date modifiedDate;
 
@@ -51,6 +57,9 @@ public class Warehouse {
 
     @Column(name="ENTRY_OF_NUMBER")
     private int entryOfNumber;
+
+    @Column(name="STATUS")
+    private String status;
 
 
 }

@@ -4,6 +4,7 @@ import fpoly.edu.datn.vibee.model.info.Filter;
 import fpoly.edu.datn.vibee.model.request.ProductRequest;
 import fpoly.edu.datn.vibee.model.response.BrandsResponse;
 import fpoly.edu.datn.vibee.model.response.ProductsResponse;
+import fpoly.edu.datn.vibee.model.response.SellOfflineResponse;
 import fpoly.edu.datn.vibee.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,5 +50,10 @@ public class ProductController {
         filter.setOrder(order);
         filter.setSearch(search);
         return this.productService.getProductsSell(filter);
+    }
+
+    @GetMapping("/get-sell-offline")
+    public ResponseEntity<SellOfflineResponse> getProductsSellOffline(@RequestParam(name="search", required = false, defaultValue = "") String search){
+        return this.productService.getProductsSellOffline(search);
     }
 }

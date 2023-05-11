@@ -25,8 +25,8 @@ public class DetailBill {
     @Column(name = "BILL_ID")
     private int billId;
 
-    @Column(name = "PRODUCT_ID")
-    private int productId;
+    @Column(name = "WAREHOUSE_ID")
+    private int warehouseId;
 
     @Column(name = "QUANTITY")
     private int quantity;
